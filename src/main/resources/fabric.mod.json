@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "playerfinder",
+  "version": "${version}",
+  "name": "Playerfinder",
+  "description": "Allows you to find your friends :)",
+  "authors": [
+    "JustAlittleWolf"
+  ],
+  "contact": {
+    "repo": "https://github.com/JustAlittleWolf/Playerfinder"
+  },
+  "license": "MIT",
+  "icon": "assets/playerfinder/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "me.wolfii.playerfinder.client.PlayerFinderClient"
+    ]
+  },
+  "mixins": [
+    "playerfinder.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
