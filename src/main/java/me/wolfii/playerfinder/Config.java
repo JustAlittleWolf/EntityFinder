@@ -1,5 +1,5 @@
 package me.wolfii.playerfinder;
 
-public class PlayerFinderConfig {
+public class Config {
     public static boolean renderDefaultHitboxes = false;
 }

@@ -1,7 +1,7 @@
 package me.wolfii.playerfinder.mixin;
 
 import me.wolfii.playerfinder.PlayerFinder;
-import me.wolfii.playerfinder.PlayerFinderConfig;
+import me.wolfii.playerfinder.Config;
 import me.wolfii.playerfinder.render.Rendermode;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -16,6 +16,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class EntityRenderDispatcherMixin {
     @Inject(method = "renderHitbox", at = @At("HEAD"), cancellable = true)
     private static void checkCancelRenderDefaultHiboxes(MatrixStack matrices, VertexConsumer vertices, Entity entity, float tickDelta, CallbackInfo ci) {
-        if (!PlayerFinderConfig.renderDefaultHitboxes && PlayerFinder.rendermode != Rendermode.NONE) ci.cancel();
+        if (!Config.renderDefaultHitboxes && PlayerFinder.rendermode != Rendermode.NONE) ci.cancel();
     }
 }

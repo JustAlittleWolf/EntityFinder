@@ -23,8 +23,8 @@ public abstract class KeyboardMixin {
     @Inject(method = "processF3", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/EntityRenderDispatcher;setRenderHitboxes(Z)V", shift = At.Shift.AFTER))
     private void hitboxEnablingCheck(int key, CallbackInfoReturnable<Boolean> cir) {
         boolean renderHitboxes = MinecraftClient.getInstance().getEntityRenderDispatcher().shouldRenderHitboxes();
-        if(!renderHitboxes) {
-            if(PlayerFinder.rendermode == Rendermode.NONE) return;
+        if (!renderHitboxes) {
+            if (PlayerFinder.rendermode == Rendermode.NONE) return;
             sendFeedback("playerfinder.feedback.disabled");
             PlayerFinder.rendermode = Rendermode.NONE;
             return;
@@ -41,11 +41,12 @@ public abstract class KeyboardMixin {
             PlayerFinder.rendermode = Rendermode.TRACERS;
             sendFeedback("playerfinder.feedback.tracers");
         }
+        PlayerFinder.lastRendermode = PlayerFinder.rendermode;
     }
 
     @Unique
     private void sendFeedback(String translatable) {
-        if(MinecraftClient.getInstance().player == null) return;
+        if (MinecraftClient.getInstance().player == null) return;
         MutableText message = prefix.copy();
         message.append(Text.translatable(translatable).formatted(Formatting.GRAY));
         MinecraftClient.getInstance().player.sendMessage(message, true);

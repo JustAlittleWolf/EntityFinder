@@ -6,6 +6,8 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import me.wolfii.playerfinder.PlayerFinder;
+import me.wolfii.playerfinder.Config;
+import me.wolfii.playerfinder.render.Rendermode;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
@@ -17,7 +19,7 @@ import net.minecraft.util.Formatting;
 
 import java.util.concurrent.CompletableFuture;
 
-import static com.mojang.brigadier.arguments.StringArgumentType.word;
+import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 
 public class CommandManager {
     private static final MutableText prefix = Text.literal("[PlayerFinder] ").formatted(Formatting.GRAY);
@@ -25,12 +27,18 @@ public class CommandManager {
     public static void registerCommand(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
         assert MinecraftClient.getInstance().player != null;
         dispatcher.register(ClientCommandManager.literal("find")
-                .then(ClientCommandManager.argument("playername", word())
+                .then(ClientCommandManager.argument("playername", greedyString())
                         .suggests(new PlayerSuggestionProvider())
                         .executes(context -> {
                             PlayerFinder.hightLightAll = false;
+                            if (PlayerFinder.rendermode == Rendermode.NONE) {
+                                PlayerFinder.rendermode = PlayerFinder.lastRendermode;
+                                MinecraftClient.getInstance().getEntityRenderDispatcher().setRenderHitboxes(Config.renderDefaultHitboxes);
+                            }
                             String playerName = context.getArgument("playername", String.class);
-                            if (PlayerFinder.highlightedPlayers.stream().noneMatch(username -> username.equalsIgnoreCase(playerName))) PlayerFinder.highlightedPlayers.add(playerName);
+                            if (PlayerFinder.highlightedPlayers.stream().noneMatch(username -> username.equalsIgnoreCase(playerName))) {
+                                PlayerFinder.highlightedPlayers.add(playerName);
+                            }
                             MutableText message = prefix.copy();
                             message.append(Text.literal(String.format(Text.translatable("playerfinder.find.specific").getString(), playerName)).formatted(Formatting.GRAY));
                             MinecraftClient.getInstance().player.sendMessage(message, true);
@@ -77,7 +85,6 @@ public class CommandManager {
             for (AbstractClientPlayerEntity suggestion : MinecraftClient.getInstance().world.getPlayers()) {
                 builder.suggest(suggestion.getGameProfile().getName());
             }
-            return builder.buildFuture();
-        }
+            return builder.buildFuture();}
     }
 }

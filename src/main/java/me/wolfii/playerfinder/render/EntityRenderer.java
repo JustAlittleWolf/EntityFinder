@@ -14,6 +14,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -21,6 +22,10 @@ import java.util.UUID;
 
 public class EntityRenderer {
 
+    /**
+     * Since I wasn't able to reverse engineer how to draw lines on top of the world
+     * a portion of this code comes from https://github.com/AdvancedXRay/XRay-Fabric
+     */
     public static void render(WorldRenderContext context) {
         if (PlayerFinder.rendermode == Rendermode.NONE) return;
 
@@ -98,7 +103,13 @@ public class EntityRenderer {
         float entityCenterX = (float) (box.minX + (box.maxX - box.minX) / 2.0f);
         float entityCenterY = (float) (box.minY + (box.maxY - box.minY) / 2.0f);
         float entityCenterZ = (float) (box.minZ + (box.maxZ - box.minZ) / 2.0f);
-        Vec3d cameraPos = new Vec3d(camera.getPos().x + camera.getHorizontalPlane().x, camera.getPos().y + camera.getHorizontalPlane().y, camera.getPos().z + camera.getHorizontalPlane().z);
+        Vec3d cameraPos = new Vec3d(camera.getPos().x, camera.getPos().y, camera.getPos().z);
+        Vector3f horizontalPlane = camera.getHorizontalPlane();
+        if(horizontalPlane.x == 0) horizontalPlane.x = 0.0001f;
+        if(horizontalPlane.y == 0) horizontalPlane.y = 0.0001f;
+        if(horizontalPlane.z == 0) horizontalPlane.z = 0.0001f;
+        double scaleFactor = (Math.abs(1f/camera.getHorizontalPlane().x) + Math.abs(1f/camera.getHorizontalPlane().y) + Math.abs(1f/camera.getHorizontalPlane().z))/3f;
+        cameraPos = cameraPos.add(camera.getHorizontalPlane().x * scaleFactor, camera.getHorizontalPlane().y* scaleFactor, camera.getHorizontalPlane().z* scaleFactor);
         buffer.vertex(entityCenterX, entityCenterY, entityCenterZ).color(255, 255, 255, 255).next();
         buffer.vertex(cameraPos.x, cameraPos.y, cameraPos.z).color(255, 255, 255, 255).next();
     }
