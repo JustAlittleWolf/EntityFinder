@@ -32,10 +32,6 @@ Tracers and Hitboxes:
 <img src="https://i.imgur.com/4RUd4H4.png" width="500" alt="Sample image with just Hitboxes">
 </div>
 
-Hitboxes only:
-
-
-
 Find specific players:
 
 <img src="https://i.imgur.com/b8J7BD7.png" width="500" alt="Sample image showing just one highlighted player">
