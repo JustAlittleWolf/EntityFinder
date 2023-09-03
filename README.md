@@ -25,6 +25,8 @@ Tracers are somewhat offcenter when having the [View Bobbing] option enabled
 
 Rendering breaks at high coordinates
 
+Incompatible with AdvancedXRay for now
+
 ### Gallery
 
 Tracers and Hitboxes:
