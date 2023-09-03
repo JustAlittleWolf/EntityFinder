@@ -88,10 +88,10 @@ public class EntityRenderer {
         EntityRenderer.drawBox(buffer, box.minX, playerEntity.getStandingEyeHeight() - 0.01f + box.minY, box.minZ, box.maxX, playerEntity.getStandingEyeHeight() + 0.01f + box.minY, box.maxZ, 1.0f, 0.0f, 0.0f, 1.0f);
 
         Vec3d vec3d = playerEntity.getRotationVec(tickDelta);
-        float entityCenterX = (float) (box.minX + (box.maxX - box.minX) / 2.0f);
-        float entityCenterZ = (float) (box.minZ + (box.maxZ - box.minZ) / 2.0f);
+        double entityCenterX = box.minX + (box.maxX - box.minX) / 2.0d;
+        double entityCenterZ = box.minZ + (box.maxZ - box.minZ) / 2.0d;
         buffer.vertex(entityCenterX, playerEntity.getStandingEyeHeight() + box.minY, entityCenterZ).color(0, 0, 255, 255).normal((float) vec3d.x, (float) vec3d.y, (float) vec3d.z).next();
-        buffer.vertex((float) (vec3d.x * 2.0) + entityCenterX, (float) ((double) playerEntity.getStandingEyeHeight() + vec3d.y * 2.0) + box.minY, (float) (vec3d.z * 2.0) + entityCenterZ).color(0, 0, 255, 255).normal((float) vec3d.x, (float) vec3d.y, (float) vec3d.z).next();
+        buffer.vertex(vec3d.x * 2.0 + entityCenterX, playerEntity.getStandingEyeHeight() + vec3d.y * 2.0 + box.minY, vec3d.z * 2.0 + entityCenterZ).color(0, 0, 255, 255).normal((float) vec3d.x, (float) vec3d.y, (float) vec3d.z).next();
     }
 
     private static void drawPlayerTracer(PlayerEntity playerEntity, Camera camera, float tickDelta, BufferBuilder buffer) {
@@ -100,9 +100,9 @@ public class EntityRenderer {
         double offsetZ = MathHelper.lerp(tickDelta, playerEntity.lastRenderZ, playerEntity.getZ()) - playerEntity.getZ();
 
         Box box = playerEntity.getBoundingBox().offset(offsetX, offsetY, offsetZ);
-        float entityCenterX = (float) (box.minX + (box.maxX - box.minX) / 2.0f);
-        float entityCenterY = (float) (box.minY + (box.maxY - box.minY) / 2.0f);
-        float entityCenterZ = (float) (box.minZ + (box.maxZ - box.minZ) / 2.0f);
+        double entityCenterX = box.minX + (box.maxX - box.minX) / 2.0d;
+        double entityCenterY =  box.minY + (box.maxY - box.minY) / 2.0d;
+        double entityCenterZ = box.minZ + (box.maxZ - box.minZ) / 2.0d;
         Vec3d cameraPos = new Vec3d(camera.getPos().x, camera.getPos().y, camera.getPos().z);
         Vector3f horizontalPlane = camera.getHorizontalPlane();
         if(horizontalPlane.x == 0) horizontalPlane.x = 0.0001f;
