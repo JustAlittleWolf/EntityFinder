@@ -33,7 +33,7 @@ public class CommandManager {
                             PlayerFinder.hightLightAll = false;
                             if (PlayerFinder.rendermode == Rendermode.NONE) {
                                 PlayerFinder.rendermode = PlayerFinder.lastRendermode;
-                                MinecraftClient.getInstance().getEntityRenderDispatcher().setRenderHitboxes(Config.renderDefaultHitboxes);
+                                MinecraftClient.getInstance().getEntityRenderDispatcher().setRenderHitboxes(true);
                             }
                             String playerName = context.getArgument("playername", String.class);
                             if (PlayerFinder.highlightedPlayers.stream().noneMatch(username -> username.equalsIgnoreCase(playerName))) {
