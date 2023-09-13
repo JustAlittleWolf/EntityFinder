@@ -6,6 +6,7 @@
   "playerfinder.find.none": "Highlighting no players",
   "playerfinder.find.all": "Highlighting all players",
   "playerfinder.find.specific": "Highlighting %s",
+  "playerfinder.unfind.specific": "No longer highlighting %s",
   "playerfinder.find.highlighting": "Currently highlighting: ",
   "playerfinder.find.nobody": "Nobody",
   "playerfinder.find.everyone": "Everyone"

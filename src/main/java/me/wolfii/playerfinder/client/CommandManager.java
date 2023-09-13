@@ -6,7 +6,6 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import me.wolfii.playerfinder.PlayerFinder;
-import me.wolfii.playerfinder.Config;
 import me.wolfii.playerfinder.render.Rendermode;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
@@ -34,9 +33,10 @@ public class CommandManager {
                             if (PlayerFinder.rendermode == Rendermode.NONE) {
                                 PlayerFinder.rendermode = PlayerFinder.lastRendermode;
                                 MinecraftClient.getInstance().getEntityRenderDispatcher().setRenderHitboxes(true);
+                                DebugMessage.debugLog("debug.show_hitboxes.on");
                             }
                             String playerName = context.getArgument("playername", String.class);
-                            if (PlayerFinder.highlightedPlayers.stream().noneMatch(username -> username.equalsIgnoreCase(playerName))) {
+                            if (PlayerFinder.highlightedPlayers.stream().noneMatch(playerName::equalsIgnoreCase)) {
                                 PlayerFinder.highlightedPlayers.add(playerName);
                             }
                             MutableText message = prefix.copy();
@@ -47,6 +47,11 @@ public class CommandManager {
         dispatcher.register(ClientCommandManager.literal("findall")
                 .executes(context -> {
                     PlayerFinder.hightLightAll = true;
+                    if (PlayerFinder.rendermode == Rendermode.NONE) {
+                        PlayerFinder.rendermode = PlayerFinder.lastRendermode;
+                        MinecraftClient.getInstance().getEntityRenderDispatcher().setRenderHitboxes(true);
+                        DebugMessage.debugLog("debug.show_hitboxes.on");
+                    }
                     PlayerFinder.highlightedPlayers.clear();
                     MutableText message = prefix.copy();
                     message.append(Text.translatable("playerfinder.find.all").formatted(Formatting.GRAY));
@@ -56,6 +61,11 @@ public class CommandManager {
         dispatcher.register(ClientCommandManager.literal("findnone")
                 .executes(context -> {
                     PlayerFinder.hightLightAll = false;
+                    if (PlayerFinder.rendermode != Rendermode.NONE) {
+                        PlayerFinder.rendermode = Rendermode.NONE;
+                        MinecraftClient.getInstance().getEntityRenderDispatcher().setRenderHitboxes(false);
+                        DebugMessage.debugLog("debug.show_hitboxes.off");
+                    }
                     PlayerFinder.highlightedPlayers.clear();
                     MutableText message = prefix.copy();
                     message.append(Text.translatable("playerfinder.find.none").formatted(Formatting.GRAY));
@@ -76,6 +86,17 @@ public class CommandManager {
                     MinecraftClient.getInstance().player.sendMessage(message);
                     return 1;
                 }));
+        dispatcher.register(ClientCommandManager.literal("unfind")
+                .then(ClientCommandManager.argument("playername", greedyString())
+                        .suggests(new PlayerSuggestionProvider())
+                        .executes(context -> {
+                            String playerName = context.getArgument("playername", String.class);
+                            PlayerFinder.highlightedPlayers.removeIf(playerName::equalsIgnoreCase);
+                            MutableText message = prefix.copy();
+                            message.append(Text.literal(String.format(Text.translatable("playerfinder.unfind.specific").getString(), playerName)).formatted(Formatting.GRAY));
+                            MinecraftClient.getInstance().player.sendMessage(message, true);
+                            return 1;
+                        })));
     }
 
     private static class PlayerSuggestionProvider implements SuggestionProvider<FabricClientCommandSource> {
@@ -85,6 +106,7 @@ public class CommandManager {
             for (AbstractClientPlayerEntity suggestion : MinecraftClient.getInstance().world.getPlayers()) {
                 builder.suggest(suggestion.getGameProfile().getName());
             }
-            return builder.buildFuture();}
+            return builder.buildFuture();
+        }
     }
 }

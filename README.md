@@ -15,6 +15,7 @@ A very useful mod made, so you can easily find your friends! (Your enemies as we
 Commands:
 
 - `/find <playername>`: highlight a specific player
+- `/unfind <playername>`: no longer highlight a specific player
 - `/findlist`: see who is being highlighted
 - `/findnone`: highlight no one
 - `/findall`: highlight everyone (default)

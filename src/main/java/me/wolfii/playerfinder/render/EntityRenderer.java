@@ -105,10 +105,10 @@ public class EntityRenderer {
         double entityCenterZ = box.minZ + (box.maxZ - box.minZ) / 2.0d;
         Vec3d cameraPos = new Vec3d(camera.getPos().x, camera.getPos().y, camera.getPos().z);
         Vector3f horizontalPlane = camera.getHorizontalPlane();
-        if(horizontalPlane.x == 0) horizontalPlane.x = 0.0001f;
-        if(horizontalPlane.y == 0) horizontalPlane.y = 0.0001f;
-        if(horizontalPlane.z == 0) horizontalPlane.z = 0.0001f;
-        double scaleFactor = (Math.abs(1f/camera.getHorizontalPlane().x) + Math.abs(1f/camera.getHorizontalPlane().y) + Math.abs(1f/camera.getHorizontalPlane().z))/3f;
+        if(horizontalPlane.x == 0) horizontalPlane.x = 0.0000001f;
+        if(horizontalPlane.y == 0) horizontalPlane.y = 0.0000001f;
+        if(horizontalPlane.z == 0) horizontalPlane.z = 0.0000001f;
+        double scaleFactor = Math.min((Math.abs(1f/camera.getHorizontalPlane().x) + Math.abs(1f/camera.getHorizontalPlane().y) + Math.abs(1f/camera.getHorizontalPlane().z))/3f, 100f);
         cameraPos = cameraPos.add(camera.getHorizontalPlane().x * scaleFactor, camera.getHorizontalPlane().y* scaleFactor, camera.getHorizontalPlane().z* scaleFactor);
         buffer.vertex(entityCenterX, entityCenterY, entityCenterZ).color(255, 255, 255, 255).next();
         buffer.vertex(cameraPos.x, cameraPos.y, cameraPos.z).color(255, 255, 255, 255).next();

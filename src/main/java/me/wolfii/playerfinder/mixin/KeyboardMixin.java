@@ -41,7 +41,7 @@ public abstract class KeyboardMixin {
             PlayerFinder.rendermode = Rendermode.TRACERS;
             sendFeedback("playerfinder.feedback.tracers");
         }
-        PlayerFinder.lastRendermode = PlayerFinder.rendermode;
+        if (PlayerFinder.rendermode != Rendermode.NONE) PlayerFinder.lastRendermode = PlayerFinder.rendermode;
     }
 
     @Unique
