@@ -1,8 +1,8 @@
 {
   "playerfinder.feedback.disabled": "Disabled rendering",
   "playerfinder.feedback.hitboxes": "Enabled rendering Hitboxes",
-  "playerfinder.feedback.tracers": "Disabled Rendering Tracers",
-  "playerfinder.feedback.both": "Disabled Rendering Hitboxes and Tracers",
+  "playerfinder.feedback.tracers": "Enabled Rendering Tracers",
+  "playerfinder.feedback.both": "Enabled Rendering Hitboxes and Tracers",
   "playerfinder.find.none": "Highlighting no players",
   "playerfinder.find.all": "Highlighting all players",
   "playerfinder.find.specific": "Highlighting %s",
