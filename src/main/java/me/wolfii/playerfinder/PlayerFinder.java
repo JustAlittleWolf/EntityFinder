@@ -9,5 +9,6 @@ public class PlayerFinder {
     public static boolean hightLightAll = true;
     public static Rendermode lastRendermode = Rendermode.BOTH;
     public static Rendermode rendermode = Rendermode.NONE;
+    public static boolean highlightNametags = true;
 }
 
