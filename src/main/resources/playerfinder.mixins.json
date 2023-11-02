@@ -8,7 +8,8 @@
     "EntityRenderDispatcherMixin",
     "EntityRendererMixin",
     "KeyboardMixin",
-    "LivingEntityRendererMixin"
+    "LivingEntityRendererMixin",
+    "PlayerEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

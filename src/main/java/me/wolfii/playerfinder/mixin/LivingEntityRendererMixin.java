@@ -12,10 +12,10 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public class LivingEntityRendererMixin {
     @Redirect(method="hasLabel(Lnet/minecraft/entity/LivingEntity;)Z", at=@At(value="INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isSneaky()Z"))
     private boolean increaseSneakingRenderDistance(LivingEntity instance) {
-        return !EntityHelper.shouldHighlightEntity(instance, !instance.isSneaking());
+        return !EntityHelper.shouldHighlightEntityCached(instance, !instance.isSneaking());
     }
     @Redirect(method="hasLabel(Lnet/minecraft/entity/LivingEntity;)Z", at=@At(value="INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isInvisibleTo(Lnet/minecraft/entity/player/PlayerEntity;)Z"))
     private boolean renderLabelWhenInvisible(LivingEntity instance, PlayerEntity playerEntity) {
-        return !EntityHelper.shouldHighlightEntity(instance, !instance.isInvisibleTo(playerEntity));
+        return !EntityHelper.shouldHighlightEntityCached(instance, !instance.isInvisibleTo(playerEntity));
     }
 }

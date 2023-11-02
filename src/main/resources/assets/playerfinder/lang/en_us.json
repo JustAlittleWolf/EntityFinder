@@ -9,5 +9,13 @@
   "playerfinder.unfind.specific": "No longer highlighting %s",
   "playerfinder.find.highlighting": "Currently highlighting: ",
   "playerfinder.find.nobody": "Nobody",
-  "playerfinder.find.everyone": "Everyone"
+  "playerfinder.find.everyone": "Everyone",
+  "playerfinder.finddistance.min": "Set minimum distance to %s",
+  "playerfinder.finddistance.minandmax": "Set minimum distance to %s and maximum distance to %s",
+  "playerfinder.findnames.enabled": "Enabled real names",
+  "playerfinder.findnames.disabled": "Disabled real names",
+  "playerfinder.findeyeheight.enabled": "Enabled eye height",
+  "playerfinder.findeyeheight.disabled": "Disabled eye height",
+  "playerfinder.findfacing.enabled": "Enabled facing vector",
+  "playerfinder.findfacing.disabled": "Disabled facing vector"
 }

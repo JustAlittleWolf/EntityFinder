@@ -16,6 +16,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class EntityRenderDispatcherMixin {
     @Inject(method = "renderHitbox", at = @At("HEAD"), cancellable = true)
     private static void checkCancelRenderDefaultHiboxes(MatrixStack matrices, VertexConsumer vertices, Entity entity, float tickDelta, CallbackInfo ci) {
-        if (!Config.renderDefaultHitboxes && PlayerFinder.rendermode != Rendermode.NONE) ci.cancel();
+        if (Config.hideVanillaHitboxes && PlayerFinder.rendermode != Rendermode.NONE) ci.cancel();
     }
 }

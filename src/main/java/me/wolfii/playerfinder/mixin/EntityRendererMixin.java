@@ -11,6 +11,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public class EntityRendererMixin {
     @Redirect(method = "renderLabelIfPresent", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isSneaky()Z"))
     private boolean renderLabelWhenSneaky(Entity instance) {
-        return !EntityHelper.shouldHighlightEntity(instance, !instance.isSneaking());
+        return !EntityHelper.shouldHighlightEntityCached(instance, !instance.isSneaking());
     }
 }

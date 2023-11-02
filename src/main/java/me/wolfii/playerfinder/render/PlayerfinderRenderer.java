@@ -1,16 +1,14 @@
 package me.wolfii.playerfinder.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.wolfii.playerfinder.Config;
 import me.wolfii.playerfinder.PlayerFinder;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -20,14 +18,14 @@ import java.util.ArrayList;
 
 public class PlayerfinderRenderer {
 
-    /**
+    /*
      * Since I wasn't able to reverse engineer how to draw lines on top of the world
      * a portion of this code comes from https://github.com/AdvancedXRay/XRay-Fabric
      */
     public static void render(WorldRenderContext context) {
         if (PlayerFinder.rendermode == Rendermode.NONE) return;
 
-        ArrayList<PlayerEntity> playersToRender = getPlayersToRender();
+        ArrayList<PlayerEntity> playersToRender = EntityHelper.getPlayerEntitiesToHighlight();
         if (playersToRender.isEmpty()) return;
 
         Tessellator tessellator = Tessellator.getInstance();
@@ -39,11 +37,17 @@ public class PlayerfinderRenderer {
         Camera camera = context.camera();
         Vec3d cameraPos = camera.getPos();
         for (PlayerEntity playerEntity : playersToRender) {
-            if (PlayerFinder.rendermode == Rendermode.HITBOXES || PlayerFinder.rendermode == Rendermode.BOTH) {
-                drawPlayerHitbox(playerEntity, tickDelta, buffer);
-            }
-            if (PlayerFinder.rendermode == Rendermode.TRACERS || PlayerFinder.rendermode == Rendermode.BOTH) {
-                drawPlayerTracer(playerEntity, camera, tickDelta, buffer);
+            switch (PlayerFinder.rendermode) {
+                case BOTH:
+                    drawPlayerHitbox(playerEntity, tickDelta, buffer);
+                    drawPlayerTracer(playerEntity, camera, tickDelta, buffer);
+                    break;
+                case TRACERS:
+                    drawPlayerTracer(playerEntity, camera, tickDelta, buffer);
+                    break;
+                case HITBOXES:
+                    drawPlayerHitbox(playerEntity, tickDelta, buffer);
+                    break;
             }
         }
 
@@ -75,15 +79,18 @@ public class PlayerfinderRenderer {
     }
 
     private static void drawPlayerHitbox(PlayerEntity playerEntity, float tickDelta, BufferBuilder buffer) {
-        double offsetX = MathHelper.lerp(tickDelta, playerEntity.lastRenderX, playerEntity.getX()) - playerEntity.getX();
-        double offsetY = MathHelper.lerp(tickDelta, playerEntity.lastRenderY, playerEntity.getY()) - playerEntity.getY();
-        double offsetZ = MathHelper.lerp(tickDelta, playerEntity.lastRenderZ, playerEntity.getZ()) - playerEntity.getZ();
+        Box box = EntityHelper.getOffsetBoundingBox(playerEntity, tickDelta);
 
-        Box box = playerEntity.getBoundingBox().offset(offsetX, offsetY, offsetZ);
         PlayerfinderRenderer.drawBox(buffer, box, 1.0f, 1.0f, 1.0f, 1.0f);
+        if (Config.renderEyeHeight) drawEyeHeight(buffer, box, playerEntity);
+        if (Config.renderFacing) drawFacing(buffer, box, playerEntity, tickDelta);
+    }
 
+    private static void drawEyeHeight(BufferBuilder buffer, Box box, PlayerEntity playerEntity) {
         PlayerfinderRenderer.drawBox(buffer, box.minX, playerEntity.getStandingEyeHeight() - 0.01f + box.minY, box.minZ, box.maxX, playerEntity.getStandingEyeHeight() + 0.01f + box.minY, box.maxZ, 1.0f, 0.0f, 0.0f, 1.0f);
+    }
 
+    private static void drawFacing(BufferBuilder buffer, Box box, PlayerEntity playerEntity, float tickDelta) {
         Vec3d vec3d = playerEntity.getRotationVec(tickDelta);
         double entityCenterX = box.minX + (box.maxX - box.minX) / 2.0d;
         double entityCenterZ = box.minZ + (box.maxZ - box.minZ) / 2.0d;
@@ -92,33 +99,19 @@ public class PlayerfinderRenderer {
     }
 
     private static void drawPlayerTracer(PlayerEntity playerEntity, Camera camera, float tickDelta, BufferBuilder buffer) {
-        double offsetX = MathHelper.lerp(tickDelta, playerEntity.lastRenderX, playerEntity.getX()) - playerEntity.getX();
-        double offsetY = MathHelper.lerp(tickDelta, playerEntity.lastRenderY, playerEntity.getY()) - playerEntity.getY();
-        double offsetZ = MathHelper.lerp(tickDelta, playerEntity.lastRenderZ, playerEntity.getZ()) - playerEntity.getZ();
-
-        Box box = playerEntity.getBoundingBox().offset(offsetX, offsetY, offsetZ);
+        Box box = EntityHelper.getOffsetBoundingBox(playerEntity, tickDelta);
         double entityCenterX = box.minX + (box.maxX - box.minX) / 2.0d;
-        double entityCenterY =  box.minY + (box.maxY - box.minY) / 2.0d;
+        double entityCenterY = box.minY + (box.maxY - box.minY) / 2.0d;
         double entityCenterZ = box.minZ + (box.maxZ - box.minZ) / 2.0d;
         Vec3d cameraPos = new Vec3d(camera.getPos().x, camera.getPos().y, camera.getPos().z);
         Vector3f horizontalPlane = camera.getHorizontalPlane();
-        if(horizontalPlane.x == 0) horizontalPlane.x = 0.0000001f;
-        if(horizontalPlane.y == 0) horizontalPlane.y = 0.0000001f;
-        if(horizontalPlane.z == 0) horizontalPlane.z = 0.0000001f;
-        double scaleFactor = Math.min((Math.abs(1f/camera.getHorizontalPlane().x) + Math.abs(1f/camera.getHorizontalPlane().y) + Math.abs(1f/camera.getHorizontalPlane().z))/3f, 100f);
-        cameraPos = cameraPos.add(camera.getHorizontalPlane().x * scaleFactor, camera.getHorizontalPlane().y* scaleFactor, camera.getHorizontalPlane().z* scaleFactor);
+        if (horizontalPlane.x == 0) horizontalPlane.x = 0.0000001f;
+        if (horizontalPlane.y == 0) horizontalPlane.y = 0.0000001f;
+        if (horizontalPlane.z == 0) horizontalPlane.z = 0.0000001f;
+        double scaleFactor = Math.min((Math.abs(1f / camera.getHorizontalPlane().x) + Math.abs(1f / camera.getHorizontalPlane().y) + Math.abs(1f / camera.getHorizontalPlane().z)) / 3f, 100f);
+        cameraPos = cameraPos.add(camera.getHorizontalPlane().x * scaleFactor, camera.getHorizontalPlane().y * scaleFactor, camera.getHorizontalPlane().z * scaleFactor);
         buffer.vertex(entityCenterX, entityCenterY, entityCenterZ).color(255, 255, 255, 255).next();
         buffer.vertex(cameraPos.x, cameraPos.y, cameraPos.z).color(255, 255, 255, 255).next();
-    }
-
-    private static ArrayList<PlayerEntity> getPlayersToRender() {
-        ArrayList<PlayerEntity> playersToRender = new ArrayList<>();
-        if (MinecraftClient.getInstance().world == null) return playersToRender;
-
-        for (Entity entity : MinecraftClient.getInstance().world.getEntities()) {
-            if(EntityHelper.shouldHighlightEntity(entity)) playersToRender.add((PlayerEntity) entity);
-        }
-        return playersToRender;
     }
 
     private static void drawBox(VertexConsumer vertexConsumer, Box box, float red, float green, float blue, float alpha) {
