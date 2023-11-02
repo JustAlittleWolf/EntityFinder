@@ -15,6 +15,7 @@ import java.util.UUID;
 public class EntityHelper {
     private static final HashSet<UUID> highlightedUUIDs = new HashSet<>();
     private static final ArrayList<PlayerEntity> highlightedPlayerEntities = new ArrayList<>();
+    private static UUID ownUUID;
 
     public static boolean shouldHighlightEntityCached(Entity entity, boolean defaultValue) {
         return defaultValue || highlightedUUIDs.contains(entity.getUuid());
@@ -24,9 +25,17 @@ public class EntityHelper {
         return shouldHighlightEntityCached(entity, false);
     }
 
-    public static void cacheHighlightedPlayers(MinecraftClient minecraftClient) {
+    public static UUID getOwnUUID() {
+        return ownUUID;
+    }
+
+    public static void beforeTick(MinecraftClient minecraftClient) {
         highlightedUUIDs.clear();
         highlightedPlayerEntities.clear();
+
+        if(minecraftClient.player != null) {
+            ownUUID = minecraftClient.player.getUuid();
+        }
 
         if(minecraftClient.world == null) return;
 
@@ -40,6 +49,8 @@ public class EntityHelper {
 
     private static boolean shouldHighlightEntity(Entity entity) {
         if (PlayerFinder.rendermode == Rendermode.NONE) return false;
+
+        //@Todo compare to camera when in first person
 
         if (MinecraftClient.getInstance().player != null) {
             double squaredDistance = MinecraftClient.getInstance().player.getPos().squaredDistanceTo(entity.getPos());

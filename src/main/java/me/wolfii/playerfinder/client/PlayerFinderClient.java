@@ -11,7 +11,7 @@ public class PlayerFinderClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         WorldRenderEvents.LAST.register(PlayerfinderRenderer::render);
-        ClientTickEvents.START_CLIENT_TICK.register(EntityHelper::cacheHighlightedPlayers);
+        ClientTickEvents.START_CLIENT_TICK.register(EntityHelper::beforeTick);
 
         ClientCommandRegistrationCallback.EVENT.register(CommandManager::registerCommand);
     }
