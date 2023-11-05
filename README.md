@@ -19,6 +19,10 @@ Commands:
 - `/findlist`: see who is being highlighted
 - `/findnone`: highlight no one
 - `/findall`: highlight everyone (default)
+- `/findnames`: reveals the real names of players
+- `/finddistance <min> <max>`: set the minimum and maximum highlighting distance
+- `/findeyeheight`: toggle highlighting eye heights
+- `/findfacing`: toggle highlighting the facing vector
 
 ### Known Issues
 

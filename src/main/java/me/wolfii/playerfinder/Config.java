@@ -1,6 +1,7 @@
 package me.wolfii.playerfinder;
 
 public class Config {
+    //@Todo make config persist after game restart
     public static boolean hideVanillaHitboxes = true;
     public static boolean showRealNamesWhenHighlighted = false;
     public static boolean renderNametagsThroughWalls = true;
