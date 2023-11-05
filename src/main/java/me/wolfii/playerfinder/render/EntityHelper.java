@@ -7,6 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -50,10 +51,15 @@ public class EntityHelper {
     private static boolean shouldHighlightEntity(Entity entity) {
         if (PlayerFinder.rendermode == Rendermode.NONE) return false;
 
-        //@Todo compare to camera when in first person
+        MinecraftClient minecraft = MinecraftClient.getInstance();
 
-        if (MinecraftClient.getInstance().player != null) {
-            double squaredDistance = MinecraftClient.getInstance().player.getPos().squaredDistanceTo(entity.getPos());
+        if (minecraft.player != null) {
+            Vec3d entityPos = entity.getPos();
+            Vec3d comparingPos = minecraft.player.getPos();
+            if(minecraft.options.getPerspective().isFirstPerson() && minecraft.cameraEntity != null) {
+                comparingPos = minecraft.cameraEntity.getPos();
+            }
+            double squaredDistance = comparingPos.squaredDistanceTo(entityPos);
             if (squaredDistance < Config.minimumDistanceSquared) return false;
             if(squaredDistance > Config.maximumDistanceSquared) return false;
         }
