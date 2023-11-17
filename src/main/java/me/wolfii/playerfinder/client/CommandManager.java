@@ -174,8 +174,10 @@ public class CommandManager {
         @Override
         public CompletableFuture<Suggestions> getSuggestions(CommandContext<FabricClientCommandSource> context, SuggestionsBuilder builder) {
             if (MinecraftClient.getInstance().player == null) return builder.buildFuture();
+            String remaining = builder.getRemaining();
             for (PlayerListEntry playerInfo : MinecraftClient.getInstance().player.networkHandler.getPlayerList()) {
-                builder.suggest(playerInfo.getProfile().getName());
+                String playerName = playerInfo.getProfile().getName();
+                if(playerName.startsWith(remaining)) builder.suggest(playerName);
             }
             return builder.buildFuture();
         }
