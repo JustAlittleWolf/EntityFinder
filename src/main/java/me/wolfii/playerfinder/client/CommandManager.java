@@ -177,7 +177,7 @@ public class CommandManager {
             String remaining = builder.getRemaining();
             for (PlayerListEntry playerInfo : MinecraftClient.getInstance().player.networkHandler.getPlayerList()) {
                 String playerName = playerInfo.getProfile().getName();
-                if(playerName.startsWith(remaining)) builder.suggest(playerName);
+                if(playerName.toLowerCase().startsWith(remaining.toLowerCase())) builder.suggest(playerName);
             }
             return builder.buildFuture();
         }
