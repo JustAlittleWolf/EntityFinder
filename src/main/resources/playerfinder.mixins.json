@@ -7,9 +7,7 @@
   "client": [
     "EntityRenderDispatcherMixin",
     "EntityRendererMixin",
-    "KeyboardMixin",
-    "LivingEntityRendererMixin",
-    "PlayerEntityRendererMixin"
+    "LivingEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -8,9 +8,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(EntityRenderer.class)
-public class EntityRendererMixin {
+public class EntityRendererMixin<T extends Entity> {
     @Redirect(method = "renderLabelIfPresent", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isSneaky()Z"))
-    private boolean renderLabelWhenSneaky(Entity instance) {
-        return !EntityHelper.shouldHighlightEntityCached(instance, !instance.isSneaking());
+    private boolean renderLabelWhenSneaky(T entity) {
+        if(EntityHelper.shouldHighlightEntityCached(entity)) return false;
+        return entity.isSneaky();
     }
 }

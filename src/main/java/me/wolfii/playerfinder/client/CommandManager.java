@@ -8,7 +8,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import me.wolfii.playerfinder.Config;
 import me.wolfii.playerfinder.PlayerFinder;
-import me.wolfii.playerfinder.render.Rendermode;
+import me.wolfii.playerfinder.render.EntityHelper;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
@@ -19,7 +19,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 
@@ -32,51 +31,39 @@ public class CommandManager {
                         .suggests(new PlayerSuggestionProvider())
                         .executes(context -> {
                             PlayerFinder.hightLightAll = false;
-                            if (PlayerFinder.rendermode == Rendermode.NONE) {
-                                PlayerFinder.rendermode = PlayerFinder.lastRendermode;
+                            if (!PlayerFinder.renderingActive) {
+                                PlayerFinder.renderingActive = true;
                                 MinecraftClient.getInstance().getEntityRenderDispatcher().setRenderHitboxes(true);
                                 DebugMessage.debugLog("debug.show_hitboxes.on");
                             }
                             String playerName = context.getArgument("playername", String.class);
-                            if (PlayerFinder.highlightedPlayers.stream().noneMatch(playerName::equalsIgnoreCase)) {
-                                PlayerFinder.highlightedPlayers.add(playerName);
-                            }
-                            sendInfoText(Text.literal(String.format(Text.translatable("playerfinder.find.specific").getString(), playerName)));
+                            PlayerFinder.highlightedNames.add(playerName.toLowerCase());
+                            EntityHelper.updateHighlightedEntities();
+                            sendInfoOverlay(Text.literal("Highlighting " + playerName));
                             return 1;
                         })));
         dispatcher.register(ClientCommandManager.literal("findall")
                 .executes(context -> {
                     PlayerFinder.hightLightAll = true;
-                    if (PlayerFinder.rendermode == Rendermode.NONE) {
-                        PlayerFinder.rendermode = PlayerFinder.lastRendermode;
+                    if (!PlayerFinder.renderingActive) {
+                        PlayerFinder.renderingActive = true;
                         MinecraftClient.getInstance().getEntityRenderDispatcher().setRenderHitboxes(true);
                         DebugMessage.debugLog("debug.show_hitboxes.on");
                     }
-                    PlayerFinder.highlightedPlayers.clear();
-                    sendInfoText(Text.translatable("playerfinder.find.all"));
-                    return 1;
-                }));
-        dispatcher.register(ClientCommandManager.literal("findnone")
-                .executes(context -> {
-                    PlayerFinder.hightLightAll = false;
-                    if (PlayerFinder.rendermode != Rendermode.NONE) {
-                        PlayerFinder.rendermode = Rendermode.NONE;
-                        MinecraftClient.getInstance().getEntityRenderDispatcher().setRenderHitboxes(false);
-                        DebugMessage.debugLog("debug.show_hitboxes.off");
-                    }
-                    PlayerFinder.highlightedPlayers.clear();
-                    sendInfoText(Text.translatable("playerfinder.find.none"));
+                    PlayerFinder.highlightedNames.clear();
+                    EntityHelper.updateHighlightedEntities();
+                    sendInfoOverlay(Text.literal("Highlighting all players"));
                     return 1;
                 }));
         dispatcher.register(ClientCommandManager.literal("findlist")
                 .executes(context -> {
-                    MutableText message = Text.translatable("playerfinder.find.highlighting").formatted(Formatting.WHITE);
+                    MutableText message = Text.literal("Currently highlighting: ").formatted(Formatting.WHITE);
                     if (PlayerFinder.hightLightAll) {
-                        message.append(Text.translatable("playerfinder.find.everyone").formatted(Formatting.BOLD).formatted(Formatting.WHITE));
-                    } else if (PlayerFinder.highlightedPlayers.isEmpty()) {
-                        message.append(Text.translatable("playerfinder.find.nobody").formatted(Formatting.BOLD).formatted(Formatting.WHITE));
+                        message.append(Text.literal("Everyone").formatted(Formatting.BOLD, Formatting.WHITE));
+                    } else if (PlayerFinder.highlightedNames.isEmpty()) {
+                        message.append(Text.literal("Nobody").formatted(Formatting.BOLD, Formatting.WHITE));
                     } else {
-                        message.append(Text.literal(String.join(", ", PlayerFinder.highlightedPlayers)).formatted(Formatting.WHITE));
+                        message.append(Text.literal(String.join(", ", PlayerFinder.highlightedNames)).formatted(Formatting.WHITE));
                     }
                     sendInfoMessage(message);
                     return 1;
@@ -86,8 +73,9 @@ public class CommandManager {
                         .suggests(new PlayerSuggestionProvider())
                         .executes(context -> {
                             String playerName = context.getArgument("playername", String.class);
-                            PlayerFinder.highlightedPlayers.removeIf(playerName::equalsIgnoreCase);
-                            sendInfoText(Text.literal(String.format(Text.translatable("playerfinder.unfind.specific").getString(), playerName)));
+                            PlayerFinder.highlightedNames.removeIf(playerName::equalsIgnoreCase);
+                            EntityHelper.updateHighlightedEntities();
+                            sendInfoOverlay(Text.literal("No longer highlighting " + playerName));
                             return 1;
                         })));
         dispatcher.register(ClientCommandManager.literal("finddistance")
@@ -95,7 +83,7 @@ public class CommandManager {
                         .executes(context -> {
                             double minDistance = context.getArgument("minimum", Double.class);
                             Config.minimumDistanceSquared = Math.max(Math.min(minDistance * minDistance, 128 * 128), 0.0);
-                            sendInfoText(Text.literal(String.format(Text.translatable("playerfinder.finddistance.min").getString(), minDistance)));
+                            sendInfoOverlay(Text.literal("Set minimum distance to " + minDistance));
                             return 1;
                         })
                         .then(ClientCommandManager.argument("maximum", DoubleArgumentType.doubleArg(0.0, 4096.0))
@@ -104,42 +92,17 @@ public class CommandManager {
                                     Config.minimumDistanceSquared = minDistance * minDistance;
                                     double maxDistance = context.getArgument("maximum", Double.class);
                                     Config.maximumDistanceSquared = maxDistance * maxDistance;
-                                    sendInfoText(Text.literal(String.format(Text.translatable("playerfinder.finddistance.minandmax").getString(), minDistance, maxDistance)));
+                                    sendInfoOverlay(Text.literal("Set minimum distance to " + minDistance + " and maximum distance to " + maxDistance));
                                     return 1;
                                 }))));
-        registerToggle(dispatcher, "findnames", "playerfinder.findnames",
-                toggleResult -> PlayerFinder.forceRealNames = getNewValueFromToggleResult(toggleResult, PlayerFinder.forceRealNames)
-        );
-        registerToggle(dispatcher, "findeyeheight", "playerfinder.findeyeheight",
-                toggleResult -> Config.renderEyeHeight = getNewValueFromToggleResult(toggleResult, Config.renderEyeHeight)
-        );
-        registerToggle(dispatcher, "findfacing", "playerfinder.findfacing",
-                toggleResult -> Config.renderFacing = getNewValueFromToggleResult(toggleResult, Config.renderFacing)
-        );
-    }
 
-    private static void registerToggle(CommandDispatcher<FabricClientCommandSource> dispatcher, String commandName, String translationKey, Consumer<ToggleResult> onCommand) {
-        dispatcher.register(ClientCommandManager.literal(commandName)
+        // BROKEN FOR NOW
+        /*dispatcher.register(ClientCommandManager.literal("findnames")
                 .executes(context -> {
-                    onCommand.accept(ToggleResult.TOGGLED);
-                    sendInfoText(Text.translatable(translationKey + "." + (PlayerFinder.forceRealNames ? "enabled" : "disabled")));
+                    PlayerFinder.forceRealNames = !PlayerFinder.forceRealNames;
+                    sendInfoOverlay(Text.literal((PlayerFinder.forceRealNames ? "Enabled" : "Disabled") + " real names"));
                     return 1;
-                })
-                .then(ClientCommandManager.literal("enable").executes(
-                        context -> {
-                            onCommand.accept(ToggleResult.ENABLED);
-                            sendInfoText(Text.translatable(translationKey + ".enabled"));
-                            return 1;
-                        }
-                ))
-                .then(ClientCommandManager.literal("disable").executes(
-                        context -> {
-                            onCommand.accept(ToggleResult.DISABLED);
-                            sendInfoText(Text.translatable(translationKey + ".disabled"));
-                            return 1;
-                        }
-                ))
-        );
+                }));*/
     }
 
     private static void sendInfoMessage(Text text) {
@@ -149,25 +112,11 @@ public class CommandManager {
         MinecraftClient.getInstance().player.sendMessage(message);
     }
 
-    private static void sendInfoText(Text text) {
+    private static void sendInfoOverlay(Text text) {
         if (MinecraftClient.getInstance().player == null) return;
         MutableText message = prefix.copy();
         message.append(text).formatted(Formatting.GRAY);
         MinecraftClient.getInstance().player.sendMessage(message, true);
-    }
-
-    private static boolean getNewValueFromToggleResult(ToggleResult toggleResult, boolean oldValue) {
-        return switch (toggleResult) {
-            case ENABLED -> true;
-            case DISABLED -> false;
-            case TOGGLED -> !oldValue;
-        };
-    }
-
-    private enum ToggleResult {
-        ENABLED,
-        DISABLED,
-        TOGGLED
     }
 
     private static class PlayerSuggestionProvider implements SuggestionProvider<FabricClientCommandSource> {
@@ -177,7 +126,7 @@ public class CommandManager {
             String remaining = builder.getRemaining();
             for (PlayerListEntry playerInfo : MinecraftClient.getInstance().player.networkHandler.getPlayerList()) {
                 String playerName = playerInfo.getProfile().getName();
-                if(playerName.toLowerCase().startsWith(remaining.toLowerCase())) builder.suggest(playerName);
+                if (playerName.toLowerCase().startsWith(remaining.toLowerCase())) builder.suggest(playerName);
             }
             return builder.buildFuture();
         }

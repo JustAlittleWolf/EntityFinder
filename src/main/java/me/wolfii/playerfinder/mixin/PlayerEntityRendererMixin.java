@@ -1,6 +1,8 @@
 package me.wolfii.playerfinder.mixin;
 
-import me.wolfii.playerfinder.Config;
+// BROKEN FOR NOW
+
+/*import me.wolfii.playerfinder.Config;
 import me.wolfii.playerfinder.PlayerFinder;
 import me.wolfii.playerfinder.render.EntityHelper;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -17,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 @Mixin(PlayerEntityRenderer.class)
 public class PlayerEntityRendererMixin {
 
-    @ModifyArgs(method = "renderLabelIfPresent(Lnet/minecraft/client/network/AbstractClientPlayerEntity;Lnet/minecraft/text/Text;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;renderLabelIfPresent(Lnet/minecraft/entity/Entity;Lnet/minecraft/text/Text;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", ordinal = 1))
+    @ModifyArgs(method = "renderLabelIfPresent(Lnet/minecraft/client/network/AbstractClientPlayerEntity;Lnet/minecraft/text/Text;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;IF)V")
     public void modifyText(Args args) {
         AbstractClientPlayerEntity abstractClientPlayerEntity = args.get(0);
         if (!PlayerFinder.forceRealNames) {
@@ -30,3 +32,4 @@ public class PlayerEntityRendererMixin {
         args.set(1, modifiedName);
     }
 }
+*/
