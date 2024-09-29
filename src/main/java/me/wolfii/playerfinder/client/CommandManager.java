@@ -8,7 +8,6 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import me.wolfii.playerfinder.Config;
 import me.wolfii.playerfinder.PlayerFinder;
-import me.wolfii.playerfinder.render.EntityHelper;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
@@ -38,7 +37,6 @@ public class CommandManager {
                             }
                             String playerName = context.getArgument("playername", String.class);
                             PlayerFinder.highlightedNames.add(playerName.toLowerCase());
-                            EntityHelper.updateHighlightedEntities();
                             sendInfoOverlay(Text.literal("Highlighting " + playerName));
                             return 1;
                         })));
@@ -51,7 +49,6 @@ public class CommandManager {
                         DebugMessage.debugLog("debug.show_hitboxes.on");
                     }
                     PlayerFinder.highlightedNames.clear();
-                    EntityHelper.updateHighlightedEntities();
                     sendInfoOverlay(Text.literal("Highlighting all players"));
                     return 1;
                 }));
@@ -74,7 +71,6 @@ public class CommandManager {
                         .executes(context -> {
                             String playerName = context.getArgument("playername", String.class);
                             PlayerFinder.highlightedNames.removeIf(playerName::equalsIgnoreCase);
-                            EntityHelper.updateHighlightedEntities();
                             sendInfoOverlay(Text.literal("No longer highlighting " + playerName));
                             return 1;
                         })));

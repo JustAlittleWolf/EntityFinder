@@ -68,8 +68,7 @@ public class PlayerfinderRenderer {
             poseStack.pop();
             RenderSystem.applyModelViewMatrix();
 
-        } catch (Exception a) {
-            System.out.println(a.getMessage());
+        } catch (Exception ignored) {
         }
     }
 

@@ -20,11 +20,10 @@ public class EntityHelper {
         return highlightedEntities.contains(entity);
     }
 
-    public static void updateHighlightedEntities() {
+    public static void beforeClientTick(MinecraftClient minecraftClient) {
         highlightedEntities.clear();
         if(!PlayerFinder.renderingActive) return;
 
-        MinecraftClient minecraftClient = MinecraftClient.getInstance();
         if (minecraftClient.world == null) return;
 
         for (Entity entity : minecraftClient.world.getPlayers()) {
