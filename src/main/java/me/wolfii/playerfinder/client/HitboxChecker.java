@@ -8,5 +8,6 @@ public class HitboxChecker {
         if (!PlayerFinder.renderingActive) return;
         if (minecraftClient.getEntityRenderDispatcher().shouldRenderHitboxes()) return;
         PlayerFinder.renderingActive = false;
+        PlayerFinder.highlightedNames.clear();
     }
 }

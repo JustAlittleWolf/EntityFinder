@@ -15,20 +15,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntityRenderer.class)
 public class LivingEntityRendererMixin<T extends LivingEntity> {
-    @Redirect(method = "hasLabel(Lnet/minecraft/entity/LivingEntity;)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isSneaky()Z"))
+    @Redirect(method = "hasLabel(Lnet/minecraft/entity/LivingEntity;D)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isSneaky()Z"))
     private boolean increaseSneakingRenderDistance(T livingEntity) {
         if(EntityHelper.shouldHighlightEntityCached(livingEntity)) return false;
         return livingEntity.isSneaking();
     }
 
-    @Redirect(method = "hasLabel(Lnet/minecraft/entity/LivingEntity;)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isInvisibleTo(Lnet/minecraft/entity/player/PlayerEntity;)Z"))
+    @Redirect(method = "hasLabel(Lnet/minecraft/entity/LivingEntity;D)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isInvisibleTo(Lnet/minecraft/entity/player/PlayerEntity;)Z"))
     private boolean renderLabelWhenInvisible(T livingEntity, PlayerEntity playerEntity) {
         if(EntityHelper.shouldHighlightEntityCached(livingEntity)) return false;
         return livingEntity.isInvisibleTo(playerEntity);
     }
 
-    @Inject(method = "hasLabel(Lnet/minecraft/entity/LivingEntity;)Z", at = @At(value = "HEAD"), cancellable = true)
-    private void forceRenderLabelWhenForceRealNames(T livingEntity, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "hasLabel(Lnet/minecraft/entity/LivingEntity;D)Z", at = @At(value = "HEAD"), cancellable = true)
+    private void forceRenderLabelWhenForceRealNames(T livingEntity, double d, CallbackInfoReturnable<Boolean> cir) {
         if (!PlayerFinder.forceRealNames) return;
         if (livingEntity.getType() != EntityType.PLAYER) return;
         MinecraftClient minecraftClient = MinecraftClient.getInstance();

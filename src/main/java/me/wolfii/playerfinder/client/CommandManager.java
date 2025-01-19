@@ -91,21 +91,13 @@ public class CommandManager {
                                     sendInfoOverlay(Text.literal("Set minimum distance to " + minDistance + " and maximum distance to " + maxDistance));
                                     return 1;
                                 }))));
-
-        // BROKEN FOR NOW
-        /*dispatcher.register(ClientCommandManager.literal("findnames")
-                .executes(context -> {
-                    PlayerFinder.forceRealNames = !PlayerFinder.forceRealNames;
-                    sendInfoOverlay(Text.literal((PlayerFinder.forceRealNames ? "Enabled" : "Disabled") + " real names"));
-                    return 1;
-                }));*/
     }
 
     private static void sendInfoMessage(Text text) {
         if (MinecraftClient.getInstance().player == null) return;
         MutableText message = prefix.copy();
         message.append(text);
-        MinecraftClient.getInstance().player.sendMessage(message);
+        MinecraftClient.getInstance().player.sendMessage(message, false);
     }
 
     private static void sendInfoOverlay(Text text) {

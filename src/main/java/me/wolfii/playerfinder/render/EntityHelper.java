@@ -58,10 +58,10 @@ public class EntityHelper {
         return highlightedEntities;
     }
 
-    public static Box getOffsetBoundingBox(Entity entity, float tickDelta) {
+    public static Box getOffsetBoundingBox(Entity entity, float tickDelta, Vec3d cameraPos) {
         double offsetX = MathHelper.lerp(tickDelta, entity.lastRenderX, entity.getX()) - entity.getX();
         double offsetY = MathHelper.lerp(tickDelta, entity.lastRenderY, entity.getY()) - entity.getY();
         double offsetZ = MathHelper.lerp(tickDelta, entity.lastRenderZ, entity.getZ()) - entity.getZ();
-        return entity.getBoundingBox().offset(offsetX, offsetY, offsetZ);
+        return entity.getBoundingBox().offset(offsetX, offsetY, offsetZ).offset(cameraPos.negate());
     }
 }

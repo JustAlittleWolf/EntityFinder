@@ -8,21 +8,13 @@ A very useful mod made, so you can easily find your friends! (Your enemies as we
 
 ### How to use
 
-- Press `shift + F3 + B` to render player hitboxes through walls
-- Press `alt + F3 + B` to render tracers to players
-- Press `alt + shift + F3 + B` tp render both
-
 Commands:
 
 - `/find <playername>`: highlight a specific player
 - `/unfind <playername>`: no longer highlight a specific player
 - `/findlist`: see who is being highlighted
-- `/findnone`: highlight no one
-- `/findall`: highlight everyone (default)
-- `/findnames`: reveals the real names of players
+- `/findall`: highlight everyone
 - `/finddistance <min> <max>`: set the minimum and maximum highlighting distance
-- `/findeyeheight`: toggle highlighting eye heights
-- `/findfacing`: toggle highlighting the facing vector
 
 ### Known Issues
 
