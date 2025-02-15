@@ -1,38 +1,31 @@
-# PlayerFinder
+# EntityFinder
 
-A very useful mod made, so you can easily find your friends! (Your enemies as well)
+A very useful mod made, so you can easily find entities.
 
-**I WILL NOT TAKE RESPONSIBILITY IF YOU GET BANNED FOR USING THIS MODE. SOME SERVERS MIGHT CONSIDER IT AN UNFAIR ADVANTAGE**
+**I WILL NOT TAKE RESPONSIBILITY IF YOU GET BANNED FOR USING THIS MOD. SOME SERVERS MIGHT CONSIDER IT AN UNFAIR ADVANTAGE**
 
 ---
 
 ### How to use
 
-Commands:
-
-- `/find <playername>`: highlight a specific player
-- `/unfind <playername>`: no longer highlight a specific player
-- `/findlist`: see who is being highlighted
-- `/findall`: highlight everyone
-- `/finddistance <min> <max>`: set the minimum and maximum highlighting distance
+- `/finder find <selector>`: highlight some entities
+- `/finder hide <selector>`: stops highlighting some entities
+- `/finder clear`: stops highlighting all entities
+- `/finder settings <setting_name> <setting_value>`: change settings
 
 ### Known Issues
 
 Tracers are somewhat offcenter when having the [View Bobbing] option enabled
 
-Rendering breaks at high coordinates
-
-Incompatible with AdvancedXRay for now
-
 ### Gallery
 
-Tracers and Hitboxes:
+`/finder find @e[type=horse]`:
 
 <div>
-<img src="https://i.imgur.com/5CQWl5f.png" width="500" alt="Sample image with Tracers and Hitboxes">
-<img src="https://i.imgur.com/4RUd4H4.png" width="500" alt="Sample image with just Hitboxes">
+<img src="https://i.imgur.com/kKRkXbU.png" width="500" alt="Sample image with Tracers and Hitboxes">
 </div>
 
-Find specific players:
+### Installation
 
-<img src="https://i.imgur.com/b8J7BD7.png" width="500" alt="Sample image showing just one highlighted player">
+- [Fabric Api](https://modrinth.com/mod/fabric-api) is **required**.
+- [Client Data Command](https://modrinth.com/mod/client-data-command) is **required**.

@@ -1,8 +1,8 @@
-package me.wolfii.playerfinder.render;
+package me.wolfii.entityfinder.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.wolfii.playerfinder.Config;
-import me.wolfii.playerfinder.PlayerFinder;
+import me.wolfii.entityfinder.EntityFinderSettings;
+import me.wolfii.entityfinder.client.EntityFinder;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.GlUsage;
@@ -11,6 +11,7 @@ import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.render.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -18,17 +19,14 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.Set;
 
-public class PlayerfinderRenderer {
+@SuppressWarnings({"SameParameterValue", "DataFlowIssue"})
+public class EntityFinderRenderer {
 
-    /*
-     * Since I wasn't able to reverse engineer how to draw lines in front of world rendering
-     * a portion of this code comes from https://github.com/AdvancedXRay/XRay-Fabric
-     */
     public static void render(WorldRenderContext context) {
-        if (!PlayerFinder.renderingActive) return;
+        if (!EntityFinder.shouldRender) return;
 
-        Set<Entity> playersToRender = EntityHelper.getEntitiesToHighlight();
-        if (playersToRender.isEmpty()) return;
+        Set<Entity> entitiesToRender = EntityFinder.getHighlightedEntities();
+        if (entitiesToRender.isEmpty()) return;
 
         VertexBuffer vertexBuffer = new VertexBuffer(GlUsage.STATIC_WRITE);
 
@@ -38,9 +36,10 @@ public class PlayerfinderRenderer {
         float tickDelta = context.tickCounter().getTickDelta(true);
         Camera camera = context.camera();
         Vec3d cameraPos = camera.getPos();
-        for (Entity playerEntity : playersToRender) {
-            drawPlayerHitbox(playerEntity, tickDelta, buffer, cameraPos);
-            drawPlayerTracer(playerEntity, camera, tickDelta, buffer, cameraPos);
+
+        for (Entity entity : entitiesToRender) {
+            drawHitbox(entity, tickDelta, buffer, cameraPos);
+            if (EntityFinderSettings.renderTracers) drawTracer(entity, camera, tickDelta, buffer, cameraPos);
         }
 
         vertexBuffer.bind();
@@ -73,16 +72,23 @@ public class PlayerfinderRenderer {
         vertexBuffer.close();
     }
 
-    private static void drawPlayerHitbox(Entity playerEntity, float tickDelta, BufferBuilder buffer, Vec3d cameraPos) {
-        Box box = EntityHelper.getOffsetBoundingBox(playerEntity, tickDelta, cameraPos);
+    private static Box getOffsetBoundingBox(Entity entity, float tickDelta, Vec3d cameraPos) {
+        double offsetX = MathHelper.lerp(tickDelta, entity.lastRenderX, entity.getX()) - entity.getX();
+        double offsetY = MathHelper.lerp(tickDelta, entity.lastRenderY, entity.getY()) - entity.getY();
+        double offsetZ = MathHelper.lerp(tickDelta, entity.lastRenderZ, entity.getZ()) - entity.getZ();
+        return entity.getBoundingBox().offset(offsetX, offsetY, offsetZ).offset(cameraPos.negate());
+    }
 
-        PlayerfinderRenderer.drawBox(buffer, box, 1.0f, 1.0f, 1.0f, 1.0f);
-        if (Config.renderEyeHeight) drawEyeHeight(buffer, box, playerEntity);
-        if (Config.renderFacing) drawFacing(buffer, box, playerEntity, tickDelta);
+    private static void drawHitbox(Entity playerEntity, float tickDelta, BufferBuilder buffer, Vec3d cameraPos) {
+        Box box = getOffsetBoundingBox(playerEntity, tickDelta, cameraPos);
+
+        EntityFinderRenderer.drawBox(buffer, box, 1.0f, 1.0f, 1.0f, 1.0f);
+        if (EntityFinderSettings.renderEyeHeight) drawEyeHeight(buffer, box, playerEntity);
+        if (EntityFinderSettings.renderFacing) drawFacing(buffer, box, playerEntity, tickDelta);
     }
 
     private static void drawEyeHeight(BufferBuilder buffer, Box box, Entity entity) {
-        PlayerfinderRenderer.drawBox(buffer, (float) (box.minX), (float) (entity.getStandingEyeHeight() - 0.01f + box.minY), (float) (box.minZ), (float) (box.maxX), (float) (entity.getStandingEyeHeight() + 0.01f + box.minY), (float) (box.maxZ), 1.0f, 0.0f, 0.0f, 1.0f);
+        EntityFinderRenderer.drawBox(buffer, (float) (box.minX), (float) (entity.getStandingEyeHeight() - 0.01f + box.minY), (float) (box.minZ), (float) (box.maxX), (float) (entity.getStandingEyeHeight() + 0.01f + box.minY), (float) (box.maxZ), 1.0f, 0.0f, 0.0f, 1.0f);
     }
 
     private static void drawFacing(BufferBuilder buffer, Box box, Entity entity, float tickDelta) {
@@ -93,8 +99,8 @@ public class PlayerfinderRenderer {
         buffer.vertex((float) (vec3d.x * 2.0 + entityCenterX), (float) (entity.getStandingEyeHeight() + vec3d.y * 2.0 + box.minY), (float) (vec3d.z * 2.0 + entityCenterZ)).color(0, 0, 255, 255).normal((float) vec3d.x, (float) vec3d.y, (float) vec3d.z);
     }
 
-    private static void drawPlayerTracer(Entity entity, Camera camera, float tickDelta, BufferBuilder buffer, Vec3d cameraPos) {
-        Box box = EntityHelper.getOffsetBoundingBox(entity, tickDelta, cameraPos);
+    private static void drawTracer(Entity entity, Camera camera, float tickDelta, BufferBuilder buffer, Vec3d cameraPos) {
+        Box box = getOffsetBoundingBox(entity, tickDelta, cameraPos);
         float entityCenterX = (float) (box.minX + (box.maxX - box.minX) / 2.0d);
         float entityCenterY = (float) (box.minY + (box.maxY - box.minY) / 2.0d);
         float entityCenterZ = (float) (box.minZ + (box.maxZ - box.minZ) / 2.0d);
@@ -108,11 +114,11 @@ public class PlayerfinderRenderer {
     }
 
     private static void drawBox(VertexConsumer vertexConsumer, Box box, float red, float green, float blue, float alpha) {
-        PlayerfinderRenderer.drawBox(vertexConsumer, (float) (box.minX), (float) (box.minY), (float) (box.minZ), (float) (box.maxX), (float) (box.maxY), (float) (box.maxZ), red, green, blue, alpha, red, green, blue);
+        EntityFinderRenderer.drawBox(vertexConsumer, (float) (box.minX), (float) (box.minY), (float) (box.minZ), (float) (box.maxX), (float) (box.maxY), (float) (box.maxZ), red, green, blue, alpha, red, green, blue);
     }
 
     private static void drawBox(VertexConsumer vertexConsumer, float x1, float y1, float z1, float x2, float y2, float z2, float red, float green, float blue, float alpha) {
-        PlayerfinderRenderer.drawBox(vertexConsumer, x1, y1, z1, x2, y2, z2, red, green, blue, alpha, red, green, blue);
+        EntityFinderRenderer.drawBox(vertexConsumer, x1, y1, z1, x2, y2, z2, red, green, blue, alpha, red, green, blue);
     }
 
     @SuppressWarnings("DuplicatedCode")

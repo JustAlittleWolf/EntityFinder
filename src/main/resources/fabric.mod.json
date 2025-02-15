@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "playerfinder",
+  "id": "entityfinder",
   "version": "${version}",
-  "name": "Playerfinder",
-  "description": "Allows you to find your friends :)",
+  "name": "EntityFinder",
+  "description": "Allows you to highlight select entities",
   "authors": [
     "JustAlittleWolf"
   ],
@@ -11,19 +11,20 @@
     "sources": "https://github.com/JustAlittleWolf/Playerfinder"
   },
   "license": "MIT",
-  "icon": "assets/playerfinder/icon.png",
+  "icon": "assets/entityfinder/icon.png",
   "environment": "client",
   "entrypoints": {
     "client": [
-      "me.wolfii.playerfinder.client.PlayerFinderClient"
+      "me.wolfii.entityfinder.client.EntityFinder"
     ]
   },
   "mixins": [
-    "playerfinder.mixins.json"
+    "entityfinder.mixins.json"
   ],
   "depends": {
     "fabricloader": "*",
     "fabric": "*",
-    "minecraft": "~1.21.4"
+    "minecraft": "~1.21.4",
+    "client-data-command": "1.0"
   }
 }
