@@ -24,7 +24,7 @@
   "depends": {
     "fabricloader": "*",
     "fabric": "*",
-    "minecraft": "~1.21.4",
+    "minecraft": "~${minecraft_version}",
     "client-data-command": "1.0"
   }
 }
