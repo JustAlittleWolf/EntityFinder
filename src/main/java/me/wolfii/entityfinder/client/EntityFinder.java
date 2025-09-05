@@ -38,12 +38,11 @@ public class EntityFinder implements ClientModInitializer {
         highlightedEntities.clear();
     }
 
-    @SuppressWarnings("DataFlowIssue")
     private static void updateHighlightedEntities(MinecraftClient minecraftClient) {
         highlightedEntities.clear();
         if (!shouldRender) return;
 
-        FabricClientCommandSource source = (FabricClientCommandSource) new ClientCommandSource(minecraftClient.getNetworkHandler(), minecraftClient);
+        FabricClientCommandSource source = (FabricClientCommandSource) new ClientCommandSource(minecraftClient.getNetworkHandler(), minecraftClient, true);
         if (minecraftClient.player == null) return;
 
         try {
