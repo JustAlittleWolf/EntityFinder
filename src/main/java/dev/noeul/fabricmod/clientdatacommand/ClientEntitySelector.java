@@ -34,17 +34,7 @@ public interface ClientEntitySelector {
             PlayerEntity serverPlayerEntity = EntitySelectorHelper.getPlayer(source.getWorld(), this.clientDataCommand$this().playerName);
             return serverPlayerEntity == null ? List.of() : List.of(serverPlayerEntity);
         } else if (this.clientDataCommand$this().uuid != null) {
-			/*for (ServerWorld serverWorld : source.getServer().getWorlds()) {
-				Entity entity = serverWorld.getEntity(this.thiz().uuid);
-				if (entity != null) {
-					if (entity.getType().isEnabled(source.getEnabledFeatures())) {
-						return List.of(entity);
-					}
-					break;
-				}
-			}*/
             ClientWorld serverWorld = source.getWorld();
-//			Entity entity = serverWorld.getEntity(this.thiz().uuid);
             Entity entity = EntitySelectorHelper.getEntity(serverWorld, this.clientDataCommand$this().uuid);
             if (entity != null) {
                 if (entity.getType().isEnabled(source.getEnabledFeatures())) {
@@ -62,13 +52,6 @@ public interface ClientEntitySelector {
             } else {
                 Predicate<Entity> predicate = this.clientDataCommand$this().getPositionPredicate(vec3d, box, source.getEnabledFeatures());
                 List<Entity> list = new ObjectArrayList<>();
-				/*if (this.thiz().isLocalWorldOnly()) {
-					this.appendEntitiesFromWorld(list, source.getWorld(), box, predicate);
-				} else {
-					for (ServerWorld serverWorld2 : source.getServer().getWorlds()) {
-						this.thiz().appendEntitiesFromWorld(list, serverWorld2, box, predicate);
-					}
-				}*/
                 this.appendEntitiesFromWorld(list, source.getWorld(), box, predicate);
 
                 return this.clientDataCommand$this().getEntities(vec3d, list);
@@ -78,11 +61,9 @@ public interface ClientEntitySelector {
 
     default List<PlayerEntity> getPlayers(FabricClientCommandSource source) {
         if (this.clientDataCommand$this().playerName != null) {
-//			ServerPlayerEntity serverPlayerEntity = source.getServer().getPlayerManager().getPlayer(this.thiz().playerName);
             PlayerEntity serverPlayerEntity = EntitySelectorHelper.getPlayer(source.getWorld(), this.clientDataCommand$this().playerName);
             return serverPlayerEntity == null ? List.of() : List.of(serverPlayerEntity);
         } else if (this.clientDataCommand$this().uuid != null) {
-//			ServerPlayerEntity serverPlayerEntity = source.getServer().getPlayerManager().getPlayer(this.thiz().uuid);
             PlayerEntity serverPlayerEntity = EntitySelectorHelper.getPlayer(source.getWorld(), this.clientDataCommand$this().uuid);
             return serverPlayerEntity == null ? List.of() : List.of(serverPlayerEntity);
         } else {
@@ -90,7 +71,6 @@ public interface ClientEntitySelector {
             Box box = this.clientDataCommand$this().getOffsetBox(vec3d);
             Predicate<Entity> predicate = this.clientDataCommand$this().getPositionPredicate(vec3d, box, null);
             if (this.clientDataCommand$this().isSenderOnly()) {
-//				if (source.getEntity() instanceof ServerPlayerEntity serverPlayerEntity2 && predicate.test(serverPlayerEntity2)) {
                 if (source.getEntity() instanceof PlayerEntity serverPlayerEntity2 && predicate.test(serverPlayerEntity2)) {
                     return List.of(serverPlayerEntity2);
                 }
@@ -100,12 +80,9 @@ public interface ClientEntitySelector {
                 int i = this.clientDataCommand$this().getAppendLimit();
                 List<PlayerEntity> list;
                 if (this.clientDataCommand$this().isLocalWorldOnly()) {
-//					list = source.getWorld().getPlayers(predicate, i);
                     list = EntitySelectorHelper.getPlayers(source.getWorld(), predicate, i);
                 } else {
                     list = new ObjectArrayList<>();
-
-//					for (ServerPlayerEntity serverPlayerEntity3 : source.getServer().getPlayerManager().getPlayerList()) {
                     for (PlayerEntity serverPlayerEntity3 : source.getWorld().getPlayers()) {
                         if (predicate.test(serverPlayerEntity3)) {
                             list.add(serverPlayerEntity3);
@@ -127,7 +104,6 @@ public interface ClientEntitySelector {
             if (box != null) {
                 world.collectEntitiesByType(this.clientDataCommand$this().entityFilter, box, predicate, entities, i);
             } else {
-//				world.collectEntitiesByType(this.thiz().entityFilter, predicate, entities, i);
                 EntitySelectorHelper.collectEntitiesByType(world, this.clientDataCommand$this().entityFilter, predicate, entities, i);
             }
 
