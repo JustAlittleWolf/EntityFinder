@@ -1,11 +1,11 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "me.wolfii.entityfinder.mixin",
+  "package": "dev.noeul.fabricmod.clientdatacommand.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "EntityRenderDispatcherMixin",
-    "LivingEntityRendererMixin"
+    "EntitySelectorMixin",
+    "EntityArgumentTypeMixin"
   ],
   "injectors": {
     "defaultRequire": 1

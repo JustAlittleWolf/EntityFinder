@@ -1,7 +1,7 @@
 package me.wolfii.entityfinder.mixin;
 
-import me.wolfii.entityfinder.client.EntityFinder;
 import me.wolfii.entityfinder.EntityFinderSettings;
+import me.wolfii.entityfinder.client.EntityFinder;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;

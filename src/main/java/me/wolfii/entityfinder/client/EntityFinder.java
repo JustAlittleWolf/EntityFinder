@@ -16,28 +16,18 @@ import net.minecraft.client.network.ClientCommandSource;
 import net.minecraft.entity.Entity;
 import org.slf4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class EntityFinder implements ClientModInitializer {
     public static final List<ClientEntitySelector> highlighted = new ArrayList<>();
     public static final List<ClientEntitySelector> hidden = new ArrayList<>();
-
-    public static boolean shouldRender = false;
-
-    private static final Set<Entity> highlightedEntities = new HashSet<>();
-
     public static final Logger LOGGER = LogUtils.getLogger();
-
-
-    @Override
-    public void onInitializeClient() {
-        ClientCommandRegistrationCallback.EVENT.register(EntityFinderCommandManager::registerCommands);
-
-        WorldRenderEvents.LAST.register(EntityFinderRenderer::render);
-
-        ClientTickEvents.START_CLIENT_TICK.register(EntityFinder::updateHighlightedEntities);
-        ClientTickEvents.END_CLIENT_TICK.register(EntityFinder::checkForDisableRendering);
-    }
+    private static final Set<Entity> highlightedEntities = new HashSet<>();
+    public static boolean shouldRender = false;
 
     private static void checkForDisableRendering(MinecraftClient minecraftClient) {
         if (!shouldRender) return;
@@ -79,6 +69,16 @@ public class EntityFinder implements ClientModInitializer {
 
     public static boolean shouldHighlight(Entity entity) {
         return shouldRender && highlightedEntities.contains(entity);
+    }
+
+    @Override
+    public void onInitializeClient() {
+        ClientCommandRegistrationCallback.EVENT.register(EntityFinderCommandManager::registerCommands);
+
+        WorldRenderEvents.LAST.register(EntityFinderRenderer::render);
+
+        ClientTickEvents.START_CLIENT_TICK.register(EntityFinder::updateHighlightedEntities);
+        ClientTickEvents.END_CLIENT_TICK.register(EntityFinder::checkForDisableRendering);
     }
 }
 

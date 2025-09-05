@@ -19,12 +19,13 @@
     ]
   },
   "mixins": [
-    "entityfinder.mixins.json"
+    "entityfinder.mixins.json",
+    "clientdatacommand/client-data-command.mixins.json"
   ],
+  "accessWidener": "clientdatacommand/client-data-command.accesswidener",
   "depends": {
     "fabricloader": "*",
     "fabric": "*",
-    "minecraft": "~${minecraft_version}",
-    "client-data-command": "1.0"
+    "minecraft": "~${minecraft_version}"
   }
 }
