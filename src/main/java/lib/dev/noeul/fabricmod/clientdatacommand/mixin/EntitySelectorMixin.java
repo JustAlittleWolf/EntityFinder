@@ -1,6 +1,6 @@
-package dev.noeul.fabricmod.clientdatacommand.mixin;
+package lib.dev.noeul.fabricmod.clientdatacommand.mixin;
 
-import dev.noeul.fabricmod.clientdatacommand.ClientEntitySelector;
+import lib.dev.noeul.fabricmod.clientdatacommand.ClientEntitySelector;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.command.EntitySelector;

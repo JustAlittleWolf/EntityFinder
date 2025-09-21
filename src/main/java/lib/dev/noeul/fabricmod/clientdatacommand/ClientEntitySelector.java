@@ -1,4 +1,4 @@
-package dev.noeul.fabricmod.clientdatacommand;
+package lib.dev.noeul.fabricmod.clientdatacommand;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;

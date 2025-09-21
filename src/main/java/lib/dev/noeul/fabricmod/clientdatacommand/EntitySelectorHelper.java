@@ -1,4 +1,4 @@
-package dev.noeul.fabricmod.clientdatacommand;
+package lib.dev.noeul.fabricmod.clientdatacommand;
 
 import com.google.common.collect.Lists;
 import net.minecraft.entity.Entity;
