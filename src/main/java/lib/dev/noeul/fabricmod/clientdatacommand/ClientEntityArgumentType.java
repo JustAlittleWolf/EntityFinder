@@ -1,4 +1,4 @@
-package dev.noeul.fabricmod.clientdatacommand;
+package lib.dev.noeul.fabricmod.clientdatacommand;
 
 import net.minecraft.command.argument.EntityArgumentType;
 

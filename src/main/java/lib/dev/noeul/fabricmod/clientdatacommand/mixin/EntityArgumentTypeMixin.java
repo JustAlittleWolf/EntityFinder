@@ -1,8 +1,8 @@
-package dev.noeul.fabricmod.clientdatacommand.mixin;
+package lib.dev.noeul.fabricmod.clientdatacommand.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import dev.noeul.fabricmod.clientdatacommand.ClientEntityArgumentType;
+import lib.dev.noeul.fabricmod.clientdatacommand.ClientEntityArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;

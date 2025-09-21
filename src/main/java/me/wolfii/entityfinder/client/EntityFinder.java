@@ -2,7 +2,7 @@ package me.wolfii.entityfinder.client;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
-import dev.noeul.fabricmod.clientdatacommand.ClientEntitySelector;
+import lib.dev.noeul.fabricmod.clientdatacommand.ClientEntitySelector;
 import me.wolfii.entityfinder.EntityFinderSettings;
 import me.wolfii.entityfinder.command.EntityFinderCommandManager;
 import me.wolfii.entityfinder.render.EntityFinderRenderer;
