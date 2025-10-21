@@ -47,10 +47,10 @@ public class EntityFinder implements ClientModInitializer {
 
         try {
             for (ClientEntitySelector highlightedSelector : highlighted) {
-                highlightedEntities.addAll(highlightedSelector.getEntities(source));
+                highlightedEntities.addAll(highlightedSelector.clientDataCommand$getEntities(source));
             }
             for (ClientEntitySelector hiddenSelector : hidden) {
-                highlightedEntities.removeAll(hiddenSelector.getEntities(source));
+                highlightedEntities.removeAll(hiddenSelector.clientDataCommand$getEntities(source));
             }
         } catch (CommandSyntaxException e) {
             LOGGER.error("Encountered issue while getting entities", e);

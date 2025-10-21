@@ -27,15 +27,15 @@ import java.util.function.Predicate;
 public interface ClientEntitySelector {
     EntitySelector clientDataCommand$this();
 
-    default List<? extends Entity> getEntities(FabricClientCommandSource source) throws CommandSyntaxException {
+    default List<? extends Entity> clientDataCommand$getEntities(FabricClientCommandSource source) throws CommandSyntaxException {
         if (!this.clientDataCommand$this().includesNonPlayers()) {
-            return this.getPlayers(source);
+            return this.clientDataCommand$getPlayers(source);
         } else if (this.clientDataCommand$this().playerName != null) {
-            PlayerEntity serverPlayerEntity = EntitySelectorHelper.getPlayer(source.getWorld(), this.clientDataCommand$this().playerName);
+            PlayerEntity serverPlayerEntity = EntitySelectorHelper.clientDataCommand$getPlayer(source.getWorld(), this.clientDataCommand$this().playerName);
             return serverPlayerEntity == null ? List.of() : List.of(serverPlayerEntity);
         } else if (this.clientDataCommand$this().uuid != null) {
             ClientWorld serverWorld = source.getWorld();
-            Entity entity = EntitySelectorHelper.getEntity(serverWorld, this.clientDataCommand$this().uuid);
+            Entity entity = EntitySelectorHelper.clientDataCommand$getEntity(serverWorld, this.clientDataCommand$this().uuid);
             if (entity != null) {
                 if (entity.getType().isEnabled(source.getEnabledFeatures())) {
                     return List.of(entity);
@@ -52,19 +52,19 @@ public interface ClientEntitySelector {
             } else {
                 Predicate<Entity> predicate = this.clientDataCommand$this().getPositionPredicate(vec3d, box, source.getEnabledFeatures());
                 List<Entity> list = new ObjectArrayList<>();
-                this.appendEntitiesFromWorld(list, source.getWorld(), box, predicate);
+                this.clientDataCommand$appendEntitiesFromWorld(list, source.getWorld(), box, predicate);
 
                 return this.clientDataCommand$this().getEntities(vec3d, list);
             }
         }
     }
 
-    default List<PlayerEntity> getPlayers(FabricClientCommandSource source) {
+    default List<PlayerEntity> clientDataCommand$getPlayers(FabricClientCommandSource source) {
         if (this.clientDataCommand$this().playerName != null) {
-            PlayerEntity serverPlayerEntity = EntitySelectorHelper.getPlayer(source.getWorld(), this.clientDataCommand$this().playerName);
+            PlayerEntity serverPlayerEntity = EntitySelectorHelper.clientDataCommand$getPlayer(source.getWorld(), this.clientDataCommand$this().playerName);
             return serverPlayerEntity == null ? List.of() : List.of(serverPlayerEntity);
         } else if (this.clientDataCommand$this().uuid != null) {
-            PlayerEntity serverPlayerEntity = EntitySelectorHelper.getPlayer(source.getWorld(), this.clientDataCommand$this().uuid);
+            PlayerEntity serverPlayerEntity = EntitySelectorHelper.clientDataCommand$getPlayer(source.getWorld(), this.clientDataCommand$this().uuid);
             return serverPlayerEntity == null ? List.of() : List.of(serverPlayerEntity);
         } else {
             Vec3d vec3d = this.clientDataCommand$this().positionOffset.apply(source.getPosition());
@@ -80,7 +80,7 @@ public interface ClientEntitySelector {
                 int i = this.clientDataCommand$this().getAppendLimit();
                 List<PlayerEntity> list;
                 if (this.clientDataCommand$this().isLocalWorldOnly()) {
-                    list = EntitySelectorHelper.getPlayers(source.getWorld(), predicate, i);
+                    list = EntitySelectorHelper.clientDataCommand$getPlayers(source.getWorld(), predicate, i);
                 } else {
                     list = new ObjectArrayList<>();
                     for (PlayerEntity serverPlayerEntity3 : source.getWorld().getPlayers()) {
@@ -98,13 +98,13 @@ public interface ClientEntitySelector {
         }
     }
 
-    default void appendEntitiesFromWorld(List<Entity> entities, World world, @Nullable Box box, Predicate<Entity> predicate) {
+    default void clientDataCommand$appendEntitiesFromWorld(List<Entity> entities, World world, @Nullable Box box, Predicate<Entity> predicate) {
         int i = this.clientDataCommand$this().getAppendLimit();
         if (entities.size() < i) {
             if (box != null) {
                 world.collectEntitiesByType(this.clientDataCommand$this().entityFilter, box, predicate, entities, i);
             } else {
-                EntitySelectorHelper.collectEntitiesByType(world, this.clientDataCommand$this().entityFilter, predicate, entities, i);
+                EntitySelectorHelper.clientDataCommand$collectEntitiesByType(world, this.clientDataCommand$this().entityFilter, predicate, entities, i);
             }
 
         }
