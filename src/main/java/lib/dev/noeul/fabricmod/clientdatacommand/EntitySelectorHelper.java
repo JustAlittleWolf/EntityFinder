@@ -21,7 +21,7 @@ import java.util.function.Predicate;
  * Contains some modifications to allow it to work on modern versions
  */
 public interface EntitySelectorHelper {
-    static PlayerEntity getPlayer(World world, String name) {
+    static PlayerEntity clientDataCommand$getPlayer(World world, String name) {
         for (PlayerEntity player : world.getPlayers()) {
             if (player.getGameProfile().getName().equalsIgnoreCase(name))
                 return player;
@@ -29,7 +29,7 @@ public interface EntitySelectorHelper {
         return null;
     }
 
-    static PlayerEntity getPlayer(World world, UUID uuid) {
+    static PlayerEntity clientDataCommand$getPlayer(World world, UUID uuid) {
         for (PlayerEntity player : world.getPlayers()) {
             if (player.getGameProfile().getId().equals(uuid))
                 return player;
@@ -37,11 +37,11 @@ public interface EntitySelectorHelper {
         return null;
     }
 
-    static Entity getEntity(World world, UUID uuid) {
+    static Entity clientDataCommand$getEntity(World world, UUID uuid) {
         return world.getEntityLookup().get(uuid);
     }
 
-    static List<PlayerEntity> getPlayers(World world, Predicate<? super PlayerEntity> predicate, int limit) {
+    static List<PlayerEntity> clientDataCommand$getPlayers(World world, Predicate<? super PlayerEntity> predicate, int limit) {
         List<PlayerEntity> list = Lists.newArrayList();
 
         for (PlayerEntity serverPlayerEntity : world.getPlayers()) {
@@ -56,7 +56,7 @@ public interface EntitySelectorHelper {
         return list;
     }
 
-    static <T extends Entity> void collectEntitiesByType(World world, TypeFilter<Entity, T> filter, Predicate<? super T> predicate, List<? super T> result, int limit) {
+    static <T extends Entity> void clientDataCommand$collectEntitiesByType(World world, TypeFilter<Entity, T> filter, Predicate<? super T> predicate, List<? super T> result, int limit) {
         world.getEntityLookup().forEach(filter, (entity) -> {
             if (predicate.test(entity)) {
                 result.add(entity);
