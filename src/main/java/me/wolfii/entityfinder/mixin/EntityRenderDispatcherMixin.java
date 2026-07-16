@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Mixin;
 @Mixin(EntityHitboxDebugRenderer.class)
 public class EntityRenderDispatcherMixin {
     @WrapMethod(method = "showHitboxes")
-    private static void checkCancelRenderDefaultHiboxes(Entity entity, float partialTicks, boolean isServerEntity, Operation<Void> original) {
+    private void checkCancelRenderDefaultHiboxes(Entity entity, float partialTicks, boolean isServerEntity, Operation<Void> original) {
         if (EntityFinder.shouldRender && EntityFinderSettings.hideVanillaHitboxes) return;
         original.call(entity, partialTicks, isServerEntity);
     }

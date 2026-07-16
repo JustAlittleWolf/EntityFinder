@@ -24,17 +24,18 @@ public class EntityFinderCommandManager {
     public static void registerCommands(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext ignoredBuildContext) {
         dispatcher.register(ClientCommands.literal("finder")
             .then(ClientCommands.literal("find")
-                .then(ClientCommands.argument("entity_selector", ClientEntityArgument.entities()))
-                .executes(context -> {
-                    if (!EntityFinder.shouldRender) {
-                        EntityFinder.shouldRender = true;
-                        Minecraft.getInstance().debugEntries.setStatus(DebugScreenEntries.ENTITY_HITBOXES, DebugScreenEntryStatus.ALWAYS_ON);
-                        ((KeyboardHandlerAccessor) Minecraft.getInstance().keyboardHandler).invokeDebugFeedbackTranslated("debug.show_hitboxes.on");
-                    }
-                    EntityFinder.highlighted.add((ClientEntitySelector) context.getArgument("entity_selector", EntitySelector.class));
-                    return Command.SINGLE_SUCCESS;
-                })
-            )
+                .then(ClientCommands.argument("entity_selector", ClientEntityArgument.entities())
+                    .executes(context -> {
+                        System.out.println("Finding entities...");
+                        if (!EntityFinder.shouldRender) {
+                            EntityFinder.shouldRender = true;
+                            Minecraft.getInstance().debugEntries.setStatus(DebugScreenEntries.ENTITY_HITBOXES, DebugScreenEntryStatus.ALWAYS_ON);
+                            ((KeyboardHandlerAccessor) Minecraft.getInstance().keyboardHandler).invokeDebugFeedbackTranslated("debug.show_hitboxes.on");
+                        }
+                        EntityFinder.highlighted.add((ClientEntitySelector) context.getArgument("entity_selector", EntitySelector.class));
+                        return Command.SINGLE_SUCCESS;
+                    })
+                ))
             .then(ClientCommands.literal("hide")
                 .then(ClientCommands.argument("entity_selector", ClientEntityArgument.entities())
                     .executes(context -> {
