@@ -2,7 +2,7 @@ package me.wolfii.entityfinder.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.wolfii.entityfinder.EntityFinderSettings;
-import me.wolfii.entityfinder.client.EntityFinder;
+import me.wolfii.entityfinder.EntityFinder;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.GlUsage;

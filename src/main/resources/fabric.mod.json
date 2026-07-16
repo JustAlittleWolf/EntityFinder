@@ -15,7 +15,7 @@
   "environment": "client",
   "entrypoints": {
     "client": [
-      "me.wolfii.entityfinder.client.EntityFinder"
+      "me.wolfii.entityfinder.EntityFinder"
     ]
   },
   "mixins": [
@@ -24,7 +24,7 @@
   ],
   "depends": {
     "fabricloader": "*",
-    "fabric": "*",
-    "minecraft": "~${minecraft_version}"
+    "fabric": ">=0.19.0",
+    "minecraft": ">=${minecraft_version}"
   }
 }

@@ -1,26 +1,21 @@
-package me.wolfii.entityfinder.client;
+package me.wolfii.entityfinder;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
-import lib.dev.noeul.fabricmod.clientdatacommand.ClientEntitySelector;
-import me.wolfii.entityfinder.EntityFinderSettings;
+import me.wolfii.clientdatacommandselector.ClientEntitySelector;
+import me.wolfii.clientdatacommandselector.FabricClientCommandSourceStack;
 import me.wolfii.entityfinder.command.EntityFinderCommandManager;
 import me.wolfii.entityfinder.render.EntityFinderRenderer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientCommandSource;
-import net.minecraft.entity.Entity;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.debug.DebugScreenEntries;
+import net.minecraft.world.entity.Entity;
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class EntityFinder implements ClientModInitializer {
     public static final List<ClientEntitySelector> highlighted = new ArrayList<>();
@@ -29,34 +24,32 @@ public class EntityFinder implements ClientModInitializer {
     private static final Set<Entity> highlightedEntities = new HashSet<>();
     public static boolean shouldRender = false;
 
-    private static void checkForDisableRendering(MinecraftClient minecraftClient) {
+    private static void checkForDisableRendering(Minecraft minecraftClient) {
         if (!shouldRender) return;
-        if (minecraftClient.getEntityRenderDispatcher().shouldRenderHitboxes()) return;
+        if (minecraftClient.debugEntries.isCurrentlyEnabled(DebugScreenEntries.ENTITY_HITBOXES)) return;
         shouldRender = false;
         hidden.clear();
         highlighted.clear();
         highlightedEntities.clear();
     }
 
-    private static void updateHighlightedEntities(MinecraftClient minecraftClient) {
+    private static void updateHighlightedEntities(Minecraft minecraftClient) {
         highlightedEntities.clear();
         if (!shouldRender) return;
-
-        FabricClientCommandSource source = (FabricClientCommandSource) new ClientCommandSource(minecraftClient.getNetworkHandler(), minecraftClient, true);
         if (minecraftClient.player == null) return;
-
+        FabricClientCommandSourceStack source = FabricClientCommandSourceStack.fromMinecraft(minecraftClient);
         try {
             for (ClientEntitySelector highlightedSelector : highlighted) {
-                highlightedEntities.addAll(highlightedSelector.clientDataCommand$getEntities(source));
+                highlightedEntities.addAll(highlightedSelector.findEntities(source));
             }
             for (ClientEntitySelector hiddenSelector : hidden) {
-                highlightedEntities.removeAll(hiddenSelector.clientDataCommand$getEntities(source));
+                hiddenSelector.findEntities(source).forEach(highlightedEntities::remove);
             }
         } catch (CommandSyntaxException e) {
             LOGGER.error("Encountered issue while getting entities", e);
         }
         highlightedEntities.removeIf(entity -> {
-            double distanceSquared = entity.squaredDistanceTo(source.getPlayer());
+            double distanceSquared = entity.distanceToSqr(minecraftClient.player);
             return distanceSquared < EntityFinderSettings.minimumDistanceSquared || distanceSquared > EntityFinderSettings.maximumDistanceSquared;
         });
         if (EntityFinderSettings.hideSelf) highlightedEntities.remove(source.getPlayer());
@@ -74,7 +67,7 @@ public class EntityFinder implements ClientModInitializer {
     public void onInitializeClient() {
         ClientCommandRegistrationCallback.EVENT.register(EntityFinderCommandManager::registerCommands);
 
-        WorldRenderEvents.LAST.register(EntityFinderRenderer::render);
+        LevelRenderEvents.END_MAIN.register(EntityFinderRenderer::render);
 
         ClientTickEvents.START_CLIENT_TICK.register(EntityFinder::updateHighlightedEntities);
         ClientTickEvents.END_CLIENT_TICK.register(EntityFinder::checkForDisableRendering);

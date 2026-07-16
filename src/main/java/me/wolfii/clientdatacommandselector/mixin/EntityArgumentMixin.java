@@ -2,7 +2,7 @@ package me.wolfii.clientdatacommandselector.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import me.wolfii.clientdatacommandupdated.ClientEntityArgument;
+import me.wolfii.clientdatacommandselector.ClientEntityArgument;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.permissions.Permission;
 import net.minecraft.server.permissions.PermissionSet;
