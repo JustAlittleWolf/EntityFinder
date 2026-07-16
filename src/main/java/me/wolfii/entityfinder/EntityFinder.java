@@ -1,18 +1,25 @@
 package me.wolfii.entityfinder;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
+import me.wolfii.clientdatacommandselector.ClientEntityArgument;
 import me.wolfii.clientdatacommandselector.ClientEntitySelector;
 import me.wolfii.clientdatacommandselector.FabricClientCommandSourceStack;
 import me.wolfii.entityfinder.command.EntityFinderCommandManager;
 import me.wolfii.entityfinder.render.EntityFinderRenderer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.debug.DebugScreenEntries;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.commands.data.BlockDataAccessor;
+import net.minecraft.server.commands.data.EntityDataAccessor;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import org.slf4j.Logger;
 
 import java.util.*;
@@ -67,7 +74,7 @@ public class EntityFinder implements ClientModInitializer {
     public void onInitializeClient() {
         ClientCommandRegistrationCallback.EVENT.register(EntityFinderCommandManager::registerCommands);
 
-        LevelRenderEvents.END_MAIN.register(EntityFinderRenderer::render);
+        LevelRenderEvents.COLLECT_SUBMITS.register(EntityFinderRenderer::render);
 
         ClientTickEvents.START_CLIENT_TICK.register(EntityFinder::updateHighlightedEntities);
         ClientTickEvents.END_CLIENT_TICK.register(EntityFinder::checkForDisableRendering);
