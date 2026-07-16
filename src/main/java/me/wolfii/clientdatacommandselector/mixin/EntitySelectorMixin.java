@@ -189,18 +189,25 @@ public abstract class EntitySelectorMixin implements ClientEntitySelector {
 
     @Unique
     private void clientdatacommandupdated$addEntities(List<Entity> result, FabricClientCommandSourceStack sender, AABB absoluteAabb, Predicate<Entity> predicate) {
-        sender
-            .getClientSource()
-            .getLevel()
-            .getEntities(
-                this.type,
-                absoluteAabb != null
-                    ? absoluteAabb
-                    : new AABB(-33554430, -8388606, -33554430, 33554413, 8388605, 33554413),
-                predicate,
-                result,
-                this.getResultLimit()
-            );
+        if (absoluteAabb != null) {
+            sender
+                .getClientSource()
+                .getLevel()
+                .getEntities(
+                    this.type,
+                    absoluteAabb,
+                    predicate,
+                    result,
+                    this.getResultLimit()
+                );
+        } else {
+            for (Entity entity : sender.getClientSource().getLevel().entitiesForRendering()) {
+                if (result.size() >= this.getResultLimit()) break;
+                if (predicate.test(entity)) {
+                    result.add(entity);
+                }
+            }
+        }
     }
 
     @Unique
