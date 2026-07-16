@@ -62,6 +62,12 @@ public class EntityFinderCommandManager {
                     context.getSource().sendFeedback(Component.literal(EntityFinder.getHighlightedEntities().size() + " entities in range"));
                     return Command.SINGLE_SUCCESS;
                 })
+                .then(ClientCommands.argument("entity_selector", ClientEntityArgument.entities())
+                    .executes(context -> {
+                        context.getSource().sendFeedback(Component.literal(ClientEntityArgument.getEntities(context, "entity_selector").size() + " entities in range"));
+                        return Command.SINGLE_SUCCESS;
+                    })
+                )
             )
         );
     }
