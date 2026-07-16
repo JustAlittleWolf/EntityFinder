@@ -20,9 +20,8 @@
   },
   "mixins": [
     "entityfinder.mixins.json",
-    "clientdatacommand/client-data-command.mixins.json"
+    "clientdatacommandselector.mixins.json"
   ],
-  "accessWidener": "clientdatacommand/client-data-command.accesswidener",
   "depends": {
     "fabricloader": "*",
     "fabric": "*",
