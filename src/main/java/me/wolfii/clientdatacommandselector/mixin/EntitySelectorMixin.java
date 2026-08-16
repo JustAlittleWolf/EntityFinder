@@ -118,17 +118,20 @@ public abstract class EntitySelectorMixin implements ClientEntitySelector {
             value = "INVOKE",
             target = "Lnet/minecraft/commands/arguments/selector/EntitySelector;addEntities(Ljava/util/List;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;)V",
             ordinal = 0
-        )
+        ),
+        cancellable = true
     )
     private void overrideAddEntities(
         CommandSourceStack sender,
         CallbackInfoReturnable<List<? extends Entity>> cir,
         @Local(name = "result") List<Entity> result,
         @Local(name = "absoluteAabb") AABB absoluteAabb,
-        @Local(name = "predicate") Predicate<Entity> predicate
+        @Local(name = "predicate") Predicate<Entity> predicate,
+        @Local(name = "pos") Vec3 pos
     ) {
         if (!(sender instanceof FabricClientCommandSourceStack)) return;
         this.clientdatacommandupdated$addEntities(result, (FabricClientCommandSourceStack) sender, absoluteAabb, predicate);
+        cir.setReturnValue(this.sortAndLimit(pos, result));
     }
 
     @Inject(
